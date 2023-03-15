@@ -22,10 +22,10 @@ app.get("/", (req, res) => {
 const openDb = () => {
     const pool = new pg_1.Pool({
         user: "postgres",
-        host: "host.docker.internal",
+        host: "localhost",
         database: "todo",
         password: "postgrespw",
-        port: 49153,
+        port: 5432,
     });
     return pool;
 };
