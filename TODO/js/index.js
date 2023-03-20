@@ -1,18 +1,18 @@
-"use strict";
 const BACKEND_ROOT_URL = "http://localhost:3001";
+import { Todos } from "./class/Todos.js";
+const todos = new Todos(BACKEND_ROOT_URL);
 const list = document.querySelector("#todolist");
 const input = document.querySelector("#newtodo");
 input.disabled = true;
-fetch(BACKEND_ROOT_URL)
-    .then((response) => response.json())
-    .then((response) => {
-    response.forEach((task) => {
-        renderTask(task.description);
+todos
+    .getTask()
+    .then((tasks) => {
+    tasks.forEach((task) => {
+        renderTask(task);
     });
     input.disabled = false;
-}, (error) => {
-    alert(error);
-});
+})
+    .catch((error) => alert(error));
 input.addEventListener("keypress", (event) => {
     if (event.key !== "Enter") {
         return;
@@ -22,26 +22,19 @@ input.addEventListener("keypress", (event) => {
     if (!text.length) {
         return;
     }
-    const json = JSON.stringify({ description: text });
-    fetch(`${BACKEND_ROOT_URL}/new`, {
-        method: "post",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: json,
-    })
-        .then((response) => response.json())
-        .then(() => {
-        renderTask(text);
+    todos
+        .addTask(text)
+        .then((task) => {
         input.value = "";
-    }, (error) => {
-        alert(error);
-    });
+        input.focus();
+        renderTask(task);
+    })
+        .catch((error) => alert(error));
 });
-const renderTask = (text) => {
+const renderTask = (task) => {
     const listItem = document.createElement("li");
     listItem.setAttribute("class", "list-group-item");
-    const itemText = document.createTextNode(text);
+    const itemText = document.createTextNode(task.text);
     listItem.append(itemText);
     list.append(listItem);
 };
