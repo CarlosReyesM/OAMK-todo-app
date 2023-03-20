@@ -34,7 +34,31 @@ input.addEventListener("keypress", (event) => {
 const renderTask = (task) => {
     const listItem = document.createElement("li");
     listItem.setAttribute("class", "list-group-item");
+    listItem.setAttribute("data-key", task.id.toString());
     const itemText = document.createTextNode(task.text);
     listItem.append(itemText);
+    renderSpan(listItem, task.text);
+    renderLink(listItem, task.id);
     list.append(listItem);
+};
+const renderSpan = (listItem, text) => {
+    const span = listItem.appendChild(document.createElement("span"));
+    span.append(document.createTextNode(text));
+};
+const renderLink = (listItem, id) => {
+    const link = listItem.appendChild(document.createElement("a"));
+    link.innerHTML = '<i class="bi bi-trash"></i>';
+    link.setAttribute("style", "float: right");
+    link.addEventListener("click", (event) => {
+        todos
+            .removeTask(id)
+            .then((id) => {
+            const elementToRemove = document.querySelector(`[data-key='${id}']`);
+            if (!elementToRemove) {
+                return;
+            }
+            list.removeChild(elementToRemove);
+        })
+            .catch((error) => alert(error));
+    });
 };

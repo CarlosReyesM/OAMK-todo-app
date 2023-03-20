@@ -54,6 +54,25 @@ class Todos {
         };
     });
   };
+
+  #removeFromArray(id: number): void {
+    const arrayWithoutRemoved = this.tasks.filter((task) => task.id !== id);
+    this.tasks = arrayWithoutRemoved;
+  }
+
+  removeTask = (id: number) => {
+    return new Promise(async (resolve, reject) => {
+      fetch(`${this.#backendUrl}/delete/${id}`, { method: "delete" })
+        .then((response) => response.json())
+        .then((response) => {
+          this.#removeFromArray(id);
+          resolve(response.id);
+        }),
+        (error: any) => {
+          reject(error);
+        };
+    });
+  };
 }
 
 export { Todos };
