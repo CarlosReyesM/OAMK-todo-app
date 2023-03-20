@@ -1,8 +1,31 @@
-const list = <HTMLUListElement>document.querySelector('#todolist');
-const input = <HTMLInputElement>document.querySelector('#newtodo');
+const BACKEND_ROOT_URL = "http://localhost:3001";
 
-input.addEventListener('keypress', (event) => {
-  if (event.key !== 'Enter') {
+interface Task {
+  id: number;
+  description: string;
+}
+
+const list = <HTMLUListElement>document.querySelector("#todolist");
+const input = <HTMLInputElement>document.querySelector("#newtodo");
+
+input.disabled = true;
+
+fetch(BACKEND_ROOT_URL)
+  .then((response) => response.json())
+  .then(
+    (response) => {
+      response.forEach((task: Task) => {
+        renderTask(task.description);
+      });
+      input.disabled = false;
+    },
+    (error) => {
+      alert(error);
+    }
+  );
+
+input.addEventListener("keypress", (event) => {
+  if (event.key !== "Enter") {
     return;
   }
   event.preventDefault();
@@ -10,10 +33,30 @@ input.addEventListener('keypress', (event) => {
   if (!text.length) {
     return;
   }
-  const listItem = document.createElement('li');
-  listItem.setAttribute('class', 'list-group-item');
-  const itemText =  document.createTextNode(text);
+  const json = JSON.stringify({ description: text });
+  fetch(`${BACKEND_ROOT_URL}/new`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: json,
+  })
+    .then((response) => response.json())
+    .then(
+      () => {
+        renderTask(text);
+        input.value = "";
+      },
+      (error) => {
+        alert(error);
+      }
+    );
+});
+
+const renderTask = (text: string) => {
+  const listItem = document.createElement("li");
+  listItem.setAttribute("class", "list-group-item");
+  const itemText = document.createTextNode(text);
   listItem.append(itemText);
   list.append(listItem);
-  input.value = '';
-});
+};
