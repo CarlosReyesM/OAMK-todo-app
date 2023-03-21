@@ -1,13 +1,13 @@
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import { Pool, QueryResult } from "pg";
-
+console.log(process.env);
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const port = 3001;
+const port = parseInt(process.env.PORT || "3001", 10);
 
 app.get("/", (req: Request, res: Response) => {
   const pool = openDb();
@@ -22,11 +22,17 @@ app.get("/", (req: Request, res: Response) => {
 
 const openDb = (): Pool => {
   const pool: Pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "todo",
-    password: "postgrespw",
-    port: 5432,
+//    user: "postgres",
+//    host: "localhost",
+//    database: "todo",
+//    password: "postgrespw",
+//    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: parseInt(process.env.DB_PORT || "", 10),
+    ssl: true
   });
   return pool;
 };

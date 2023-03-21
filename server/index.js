@@ -15,11 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const pg_1 = require("pg");
+console.log(process.env);
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
-const port = 3001;
+const port = parseInt(process.env.PORT || "3001", 10);
 app.get("/", (req, res) => {
     const pool = openDb();
     pool.query("select * from task", (error, result) => {
@@ -31,11 +32,17 @@ app.get("/", (req, res) => {
 });
 const openDb = () => {
     const pool = new pg_1.Pool({
-        user: "postgres",
-        host: "localhost",
-        database: "todo",
-        password: "postgrespw",
-        port: 5432,
+        //    user: "postgres",
+        //    host: "localhost",
+        //    database: "todo",
+        //    password: "postgrespw",
+        //    port: 5432,
+        user: process.env.DB_USER,
+        host: process.env.DB_HOST,
+        database: process.env.DB_DATABASE,
+        password: process.env.DB_PASSWORD,
+        port: parseInt(process.env.DB_PORT || "", 10),
+        ssl: true
     });
     return pool;
 };
