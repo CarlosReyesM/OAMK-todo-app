@@ -35,8 +35,6 @@ const renderTask = (task) => {
     const listItem = document.createElement("li");
     listItem.setAttribute("class", "list-group-item");
     listItem.setAttribute("data-key", task.id.toString());
-    const itemText = document.createTextNode(task.text);
-    listItem.append(itemText);
     renderSpan(listItem, task.text);
     renderLink(listItem, task.id);
     list.append(listItem);
