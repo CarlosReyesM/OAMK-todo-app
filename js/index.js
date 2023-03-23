@@ -14,6 +14,9 @@ todos
 })
     .catch((error) => alert(error));
 input.addEventListener("keypress", (event) => {
+    if (input.disabled) {
+        return;
+    }
     if (event.key !== "Enter") {
         return;
     }
@@ -22,14 +25,21 @@ input.addEventListener("keypress", (event) => {
     if (!text.length) {
         return;
     }
+    input.disabled = true;
     todos
         .addTask(text)
         .then((task) => {
-        input.value = "";
-        input.focus();
         renderTask(task);
     })
-        .catch((error) => alert(error));
+        .then(() => {
+        input.value = "";
+        input.focus();
+        input.disabled = false;
+    })
+        .catch((error) => {
+        alert(error);
+        input.disabled = false;
+    });
 });
 const renderTask = (task) => {
     const listItem = document.createElement("li");
